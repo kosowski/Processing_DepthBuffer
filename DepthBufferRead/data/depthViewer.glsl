@@ -6,7 +6,7 @@ varying vec4 vertTexCoord;
 
 void main() {  
 	vec4 depth = texture2D(depthTexture, vertTexCoord.st); 
-	gl_FragColor = depth;
+	gl_FragColor = vec4(depth.r);
 }
 
 

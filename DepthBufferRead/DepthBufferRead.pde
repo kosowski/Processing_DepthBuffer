@@ -18,10 +18,11 @@
   }
   
   public void draw() {
+    // Draw some spheres
     pg.beginDraw();
     pg.background(0);
-
-    pg.fill(255,0,0);
+    pg.lights();
+    pg.fill(0xff1E58F5);
     pg.noStroke();
     int numSpheres = 8;
     for(int i=0; i< numSpheres; i++) {
@@ -31,26 +32,29 @@
       pg.popMatrix();
     }
 
+    //Copy depth buffer to custom frame buffer
     PGL pgl = pg.beginPGL();
     FrameBuffer fb = ((PGraphicsOpenGL)pg).getFrameBuffer(true);
-    fbo.copyDepthFrom(pgl, fb.glFbo);
-    
+    fbo.copyDepthFrom(pgl, fb.glFbo);   
     pg.endPGL();
     pg.endDraw();
 
-    pgl = beginPGL();
-    
+
+    // Pass depth buffer as texture to shader
+    pgl = beginPGL();  
     int textureID = fbo.getDepthTexture()[0];
     int textureUnit = PGL.TEXTURE2;
-
     //int loc = pgl.getUniformLocation(shader.glProgram, "depthTexture");
     //pgl.uniform1i(loc, textureID);
     pgl.activeTexture(textureUnit);
     pgl.bindTexture(PGL.TEXTURE_2D, textureID);
     shader.set("depthTexture", textureID);
     shader(shader);
-
-    background(10);
+    //Draw full screen quad 
     rect(0,0,width,height);    
     endPGL();
+    
+    //Draw original scene
+    resetShader();
+    image(pg,0,0, width/4, height/4);
   }
